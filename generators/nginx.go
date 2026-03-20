@@ -296,6 +296,12 @@ func WriteNginxConfig(config NginxConfig, filename string) error {
 		return fmt.Errorf("error parsing template: %v", err)
 	}
 
+	// Normalize path and ensure parent dirs exist
+	filename, err = NormalizeOutputPath(filename)
+	if err != nil {
+		return err
+	}
+
 	// Create the file
 	file, err := os.Create(filename)
 	if err != nil {
@@ -314,7 +320,7 @@ func WriteNginxConfig(config NginxConfig, filename string) error {
 
 // GenerateNginxConfig manages the entire Nginx interactive flow
 func GenerateNginxConfig() {
-	fmt.Println("\n🔧 Configuring Nginx...\n")
+	fmt.Println("\n🔧 Configuring Nginx...")
 
 	domain := AskDomain()
 	useHTTPS := AskHTTPS()

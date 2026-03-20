@@ -7,9 +7,13 @@ echo "🔨 Building CONGA for multiple platforms...\n"
 mkdir build
 cd build
 
-# Linux
+# Linux 64-bit
 echo "Building for Linux..."
 GOOS=linux GOARCH=amd64 go build -o conga-linux ..
+
+# Linux ARM64
+echo "Building for Linux ARM64..."
+GOOS=linux GOARCH=arm64 go build -o conga-linux-arm64 ..
 
 # macOS Intel
 echo "Building for macOS (Intel)..."
