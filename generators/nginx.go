@@ -135,7 +135,7 @@ func AskDomain() string {
 		Default: "localhost",
 	}
 
-	domain, err := prompt.Run()
+	domain, err := runPromptOrExit(prompt)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return ""
@@ -150,7 +150,7 @@ func AskHTTPS() bool {
 		Items: []string{"Yes", "No"},
 	}
 
-	_, result, err := prompt.Run()
+	_, result, err := runSelectOrExit(prompt)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return false
@@ -177,7 +177,7 @@ func AskNumberOfRoutes() int {
 		},
 	}
 
-	result, err := prompt.Run()
+	result, err := runPromptOrExit(prompt)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return 0
@@ -196,7 +196,7 @@ func AskRoute(routeNumber int) Route {
 		Label:   "Path (e.g., / or /api)",
 		Default: "/",
 	}
-	path, err := pathPrompt.Run()
+	path, err := runPromptOrExit(pathPrompt)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return Route{}
@@ -207,7 +207,7 @@ func AskRoute(routeNumber int) Route {
 		Label: "Type",
 		Items: []string{"Proxy", "Static files"},
 	}
-	_, routeType, err := typePrompt.Run()
+	_, routeType, err := runSelectOrExit(typePrompt)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return Route{}
@@ -225,7 +225,7 @@ func AskRoute(routeNumber int) Route {
 			Label:   "Proxy destination (e.g., localhost:3000)",
 			Default: "localhost:3000",
 		}
-		proxy, err := proxyPrompt.Run()
+		proxy, err := runPromptOrExit(proxyPrompt)
 		if err != nil {
 			fmt.Println("Error:", err)
 			return Route{}
@@ -237,7 +237,7 @@ func AskRoute(routeNumber int) Route {
 			Label: "Add standard headers? (Host, X-Real-IP, etc)",
 			Items: []string{"Yes", "No"},
 		}
-		_, headers, err := headersPrompt.Run()
+		_, headers, err := runSelectOrExit(headersPrompt)
 		if err != nil {
 			fmt.Println("Error:", err)
 			return Route{}
@@ -249,7 +249,7 @@ func AskRoute(routeNumber int) Route {
 			Label: "Add WebSocket support? (Upgrade headers)",
 			Items: []string{"Yes", "No"},
 		}
-		_, ws, err := wsPrompt.Run()
+		_, ws, err := runSelectOrExit(wsPrompt)
 		if err != nil {
 			fmt.Println("Error:", err)
 			return Route{}
@@ -264,7 +264,7 @@ func AskRoute(routeNumber int) Route {
 			Label:   "Directory to serve (e.g., /home/user/app/dist)",
 			Default: "/var/www/html",
 		}
-		dir, err := dirPrompt.Run()
+		dir, err := runPromptOrExit(dirPrompt)
 		if err != nil {
 			fmt.Println("Error:", err)
 			return Route{}

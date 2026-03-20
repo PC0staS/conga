@@ -15,12 +15,18 @@ jobs:
         steps:
             - name: Install dependencies
               run: dnf install -y copr-cli rpm-build git golang
+
             - uses: actions/checkout@v4
               with:
                   fetch-depth: 0
 
             - name: Fix git ownership
               run: git config --global --add safe.directory $PWD
+
+            - name: Check vendor is up to date
+              run: |
+                  go mod vendor
+                  git diff --exit-code vendor/
 
             - name: Setup COPR config
               run: |
@@ -32,16 +38,40 @@ jobs:
                   token = ${{ secrets.COPR_TOKEN }}
                   copr_url = https://copr.fedorainfracloud.org
                   EOF
-            - name: Check vendor is up to date
-              run: |
-                  go mod vendor
-                  git diff --exit-code vendor/
+
             - name: Build SRPM and submit to COPR
               run: |
                   VERSION=${GITHUB_REF_NAME#v}
                   git archive --format=tar.gz --prefix=conga-${VERSION}/ HEAD -o conga-${VERSION}.tar.gz
                   rpmbuild -bs conga.spec \
-                      --define "_sourcedir $PWD" \
-                      --define "_srcrpmdir $PWD" \
-                      --define "version ${VERSION}"
+                    --define "_sourcedir $PWD" \
+                    --define "_srcrpmdir $PWD" \
+                    --define "version ${VERSION}"
                   copr-cli build conga *.src.rpm --nowait
+
+    update-homebrew:
+        runs-on: ubuntu-latest
+        needs: build
+
+        steps:
+            - name: Checkout homebrew tap
+              uses: actions/checkout@v4
+              with:
+                  repository: pc0stas/homebrew-conga
+                  token: ${{ secrets.HOMEBREW_TAP_TOKEN }}
+
+            - name: Update formula
+              run: |
+                  VERSION=${GITHUB_REF_NAME#v}
+                  SHA=$(curl -sL https://github.com/pc0stas/conga/archive/v${VERSION}.tar.gz | sha256sum | awk '{print $1}')
+                  sed -i "s|url .*|url \"https://github.com/pc0stas/conga/archive/v${VERSION}.tar.gz\"|" Formula/conga.rb
+                  sed -i "s|sha256 .*|sha256 \"${SHA}\"|" Formula/conga.rb
+
+            - name: Commit and push
+              run: |
+                  VERSION=${GITHUB_REF_NAME#v}
+                  git config user.name "github-actions"
+                  git config user.email "actions@github.com"
+                  git add Formula/conga.rb
+                  git commit -m "conga ${VERSION}"
+                  git push

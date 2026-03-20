@@ -40,16 +40,40 @@ func NormalizeOutputPath(filename string) (string, error) {
 }
 
 func askOutput(defaultValue string) string {
-	prompt := promptui.Prompt{
-		Label:   "Output filename",
-		Default: defaultValue,
-	}
-	
-	output, err := prompt.Run()
-	if err != nil {
-		fmt.Println("Error:", err)
-		return defaultValue
-	}
-	
-	return output
+    prompt := promptui.Prompt{
+        Label:   "Output filename",
+        Default: defaultValue,
+    }
+
+    output, err := runPromptOrExit(prompt)
+    if err != nil {
+        fmt.Println("❌ Error:", err)
+        return defaultValue
+    }
+
+    return output
+}
+
+// runPromptOrExit runs a prompt and exits the program if the user hits Ctrl+C.
+func runPromptOrExit(p promptui.Prompt) (string, error) {
+    result, err := p.Run()
+    if err != nil {
+        if err == promptui.ErrInterrupt || err.Error() == "Interrupt" {
+            fmt.Println("\n❌ Interrupted")
+            os.Exit(1)
+        }
+    }
+    return result, err
+}
+
+// runSelectOrExit runs a select prompt and exits the program if the user hits Ctrl+C.
+func runSelectOrExit(s promptui.Select) (int, string, error) {
+    idx, res, err := s.Run()
+    if err != nil {
+        if err == promptui.ErrInterrupt || err.Error() == "Interrupt" {
+            fmt.Println("\n❌ Interrupted")
+            os.Exit(1)
+        }
+    }
+    return idx, res, err
 }

@@ -88,7 +88,7 @@ Generates a 'docker-compose.yml' file ready to use.`)
 
 // AskNumberOfServices asks how many services to configure
 func AskNumberOfServices() int {
-	prompt := promptui.Prompt{
+	result, err := runPromptOrExit(promptui.Prompt{
 		Label:   "Number of services",
 		Default: "1",
 		Validate: func(input string) error {
@@ -102,9 +102,7 @@ func AskNumberOfServices() int {
 			}
 			return nil
 		},
-	}
-
-	result, err := prompt.Run()
+	})
 	if err != nil {
 		fmt.Println("Error:", err)
 		return 0
@@ -124,7 +122,7 @@ func AskService(serviceNumber int) DockerService {
 		Label:   "Service name (e.g., web, db, cache)",
 		Default: "service",
 	}
-	name, err := namePrompt.Run()
+	name, err := runPromptOrExit(namePrompt)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return DockerService{}
@@ -135,7 +133,7 @@ func AskService(serviceNumber int) DockerService {
 		Label:   "Docker image (e.g., nginx:latest, postgres:15)",
 		Default: "alpine:latest",
 	}
-	image, err := imagePrompt.Run()
+	image, err := runPromptOrExit(imagePrompt)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return DockerService{}
@@ -155,7 +153,7 @@ func AskService(serviceNumber int) DockerService {
 		Label: "Add port mappings?",
 		Items: []string{"Yes", "No"},
 	}
-	_, addPorts, err := portsPrompt.Run()
+	_, addPorts, err := runSelectOrExit(portsPrompt)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return service
@@ -170,7 +168,7 @@ func AskService(serviceNumber int) DockerService {
 		Label: "Add volume mounts?",
 		Items: []string{"Yes", "No"},
 	}
-	_, addVolumes, err := volumesPrompt.Run()
+	_, addVolumes, err := runSelectOrExit(volumesPrompt)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return service
@@ -185,7 +183,7 @@ func AskService(serviceNumber int) DockerService {
 		Label: "Use environment file?",
 		Items: []string{"Yes", "No"},
 	}
-	_, useEnvFile, err := envFilePrompt.Run()
+	_, useEnvFile, err := runSelectOrExit(envFilePrompt)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return service
@@ -199,7 +197,7 @@ func AskService(serviceNumber int) DockerService {
 			Label: "Add environment variables?",
 			Items: []string{"Yes", "No"},
 		}
-		_, addEnv, err := envPrompt.Run()
+		_, addEnv, err := runSelectOrExit(envPrompt)
 		if err != nil {
 			fmt.Println("Error:", err)
 			return service
@@ -221,7 +219,7 @@ func AskPorts() []string {
 		portPrompt := promptui.Prompt{
 			Label: "Port mapping (container:host, e.g., 5432:5432)",
 		}
-		port, err := portPrompt.Run()
+		port, err := runPromptOrExit(portPrompt)
 		if err != nil {
 			fmt.Println("Error:", err)
 			break
@@ -237,7 +235,7 @@ func AskPorts() []string {
 			Label: "Add another port?",
 			Items: []string{"Yes", "No"},
 		}
-		_, cont, err := continuePrompt.Run()
+		_, cont, err := runSelectOrExit(continuePrompt)
 		if err != nil || cont == "No" {
 			break
 		}
@@ -254,7 +252,7 @@ func AskVolumes() []string {
 		volumePrompt := promptui.Prompt{
 			Label: "Volume mount (container:host, e.g., /data:/var/lib/postgresql/data)",
 		}
-		volume, err := volumePrompt.Run()
+		volume, err := runPromptOrExit(volumePrompt)
 		if err != nil {
 			fmt.Println("Error:", err)
 			break
@@ -270,7 +268,7 @@ func AskVolumes() []string {
 			Label: "Add another volume?",
 			Items: []string{"Yes", "No"},
 		}
-		_, cont, err := continuePrompt.Run()
+		_, cont, err := runSelectOrExit(continuePrompt)
 		if err != nil || cont == "No" {
 			break
 		}
@@ -287,7 +285,7 @@ func AskEnvironmentVariables() map[string]string {
 		keyPrompt := promptui.Prompt{
 			Label: "Environment variable name (e.g., POSTGRES_PASSWORD)",
 		}
-		key, err := keyPrompt.Run()
+		key, err := runPromptOrExit(keyPrompt)
 		if err != nil {
 			fmt.Println("Error:", err)
 			break
@@ -300,7 +298,7 @@ func AskEnvironmentVariables() map[string]string {
 		valuePrompt := promptui.Prompt{
 			Label: fmt.Sprintf("Value for %s", key),
 		}
-		value, err := valuePrompt.Run()
+		value, err := runPromptOrExit(valuePrompt)
 		if err != nil {
 			fmt.Println("Error:", err)
 			break
@@ -312,7 +310,7 @@ func AskEnvironmentVariables() map[string]string {
 			Label: "Add another variable?",
 			Items: []string{"Yes", "No"},
 		}
-		_, cont, err := continuePrompt.Run()
+		_, cont, err := runSelectOrExit(continuePrompt)
 		if err != nil || cont == "No" {
 			break
 		}
@@ -328,7 +326,7 @@ func AskEnvFile() string {
 		Default: "",
 	}
 
-	envFile, err := prompt.Run()
+	envFile, err := runPromptOrExit(prompt)
 	if err != nil {
 		fmt.Println("Error:", err)
 		return ""

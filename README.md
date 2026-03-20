@@ -18,14 +18,11 @@ sudo dnf copr enable pablocostas/conga
 sudo dnf install conga
 ```
 
-Or grab a [binary](https://github.com/pc0stas/conga/releases).
-
-**Coming soon:**
-
 ```bash
-dnf install conga # Fedora
 brew install conga # macOS
 ```
+
+Or grab a [binary](https://github.com/pc0stas/conga/releases).
 
 ## Usage
 
