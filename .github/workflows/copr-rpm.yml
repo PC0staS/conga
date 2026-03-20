@@ -41,4 +41,4 @@ jobs:
                       --define "_sourcedir $PWD" \
                       --define "_srcrpmdir $PWD" \
                       --define "version ${VERSION}"
-                  copr-cli build conga *.src.rpm
+                  copr-cli build conga *.src.rpm --nowait
