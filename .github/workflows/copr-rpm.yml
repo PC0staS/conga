@@ -13,15 +13,14 @@ jobs:
             options: --user root
 
         steps:
+            - name: Install dependencies
+              run: dnf install -y copr-cli rpm-build git
             - uses: actions/checkout@v4
               with:
                   fetch-depth: 0
 
             - name: Fix git ownership
               run: git config --global --add safe.directory $PWD
-
-            - name: Install dependencies
-              run: dnf install -y copr-cli rpm-build git
 
             - name: Setup COPR config
               run: |
