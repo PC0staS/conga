@@ -4,7 +4,8 @@ Release:        1%{?dist}
 Summary:        Config generator CLI
 License:        MIT
 URL:            https://github.com/pc0stas/conga
-Source0:        https://github.com/pc0stas/conga/archive/v%{version}.tar.gz
+Source0:        conga-%{version}.tar.gz
+
 
 BuildRequires:  golang >= 1.23
 BuildRequires:  git
@@ -13,7 +14,7 @@ BuildRequires:  git
 Build configs without the pain.
 
 %prep
-%setup -q
+%setup -q -n conga-%{version}
 
 %build
 go build -ldflags "-X main.Version=%{version}" -o conga .
