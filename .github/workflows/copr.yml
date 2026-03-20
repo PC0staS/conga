@@ -1,0 +1,20 @@
+name: Build on COPR
+
+on:
+    push:
+        tags:
+            - "v*"
+
+jobs:
+    copr-build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Trigger COPR build
+              run: |
+                  ARCHIVE_URL="https://github.com/pc0stas/conga/archive/refs/tags/${GITHUB_REF#refs/tags/}.tar.gz"
+
+                  curl -X POST \
+                    --basic -u "pablocostas:${{ secrets.COPR_PASSWORD }}" \
+                    "https://copr.fedorainfracloud.org/api_3/project/pablocostas/conga/builds/add/url" \
+                    -d "url=$ARCHIVE_URL"
