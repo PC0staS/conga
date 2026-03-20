@@ -13,6 +13,8 @@ jobs:
 
         steps:
             - uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
 
             - name: Install dependencies
               run: dnf install -y copr-cli rpm-build git
@@ -28,19 +30,12 @@ jobs:
                   copr_url = https://copr.fedorainfracloud.org
                   EOF
 
-            - name: Get version
-              run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
-
-            - name: Create tarball
+            - name: Build SRPM and submit to COPR
               run: |
-                  git archive --format=tar.gz --prefix=conga-${{ env.VERSION }}/ HEAD -o conga-${{ env.VERSION }}.tar.gz
-
-            - name: Build SRPM
-              run: |
+                  VERSION=${GITHUB_REF_NAME#v}
+                  git archive --format=tar.gz --prefix=conga-${VERSION}/ HEAD -o conga-${VERSION}.tar.gz
                   rpmbuild -bs conga.spec \
-                    --define "_sourcedir $PWD" \
-                    --define "_srcrpmdir $PWD" \
-                    --define "version ${{ env.VERSION }}"
-
-            - name: Submit to COPR
-              run: copr-cli build conga *.src.rpm
+                      --define "_sourcedir $PWD" \
+                      --define "_srcrpmdir $PWD" \
+                      --define "version ${VERSION}"
+                  copr-cli build conga *.src.rpm
