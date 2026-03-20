@@ -1,23 +1,31 @@
 name: Publish to Snap Store
 
 on:
-    push:
-        tags:
-            - "v*"
+ push:
+  tags:
+   - 'v*'
 
 permissions:
-    contents: read
+ contents: read
 
 jobs:
-    build:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - uses: snapcore/action-build@v1
-              id: build
-            - uses: snapcore/action-publish@v1
-              env:
-                  SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
-              with:
-                  snap: ${{ steps.build.outputs.snap }}
-                  release: edge
+ build:
+  runs-on: ubuntu-latest
+  strategy:
+   matrix:
+    arch: [amd64, arm64]
+
+  steps:
+  - uses: actions/checkout@v4
+
+  - uses: snapcore/action-build@v1
+    id: build
+    with:
+     architecture: ${{ matrix.arch }}
+
+  - uses: snapcore/action-publish@v1
+    env:
+     SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.STORE_LOGIN }}
+    with:
+     snap: ${{ steps.build.outputs.snap }}
+     release: stable
