@@ -17,7 +17,7 @@ Build configs without the pain.
 %setup -q -n conga-%{version}
 
 %build
-go build -ldflags "-X main.Version=%{version}" -o conga .
+go build -mod=vendor -ldflags "-X main.Version=%{version}" -o conga .
 
 %install
 install -Dm755 conga %{buildroot}%{_bindir}/conga
