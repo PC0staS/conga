@@ -1,4 +1,4 @@
-name: Build and Upload RPM to COPR
+name: Build and publish to COPR
 
 on:
     push:
@@ -6,44 +6,30 @@ on:
             - "v*"
 
 jobs:
-    build-rpm:
+    build:
         runs-on: ubuntu-latest
         container:
-            image: fedora:39
+            image: fedora:latest
 
         steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
+            - uses: actions/checkout@v4
 
             - name: Install dependencies
-              run: |
-                  dnf install -y golang rpmdevtools
+              run: dnf install -y copr-cli rpm-build
 
-            - name: Setup rpmbuild
+            - name: Setup COPR config
               run: |
-                  rpmdev-setuptree
+                  mkdir -p ~/.config
+                  cat > ~/.config/copr << EOF
+                  [copr-cli]
+                  login = ${{ secrets.COPR_LOGIN }}
+                  username = ${{ secrets.COPR_USERNAME }}
+                  token = ${{ secrets.COPR_TOKEN }}
+                  copr_url = https://copr.fedorainfracloud.org
+                  EOF
 
-            - name: Prepare SPEC file
-              run: |
-                  cp conga.spec ~/rpmbuild/SPECS/
-                  VERSION=${GITHUB_REF#refs/tags/v}
-                  sed -i "s/Version:.*/Version:        ${VERSION}/" ~/rpmbuild/SPECS/conga.spec
+            - name: Build SRPM
+              run: rpmbuild -bs conga.spec --define "_sourcedir $PWD" --define "_srcrpmdir $PWD"
 
-            - name: Download source
-              run: |
-                  cd ~/rpmbuild/SOURCES
-                  wget https://github.com/pc0stas/conga/archive/refs/tags/${GITHUB_REF#refs/tags/}.tar.gz
-
-            - name: Build RPM
-              run: |
-                  cd ~/rpmbuild
-                  rpmbuild -ba SPECS/conga.spec
-
-            - name: Upload to COPR
-              run: |
-                  dnf install -y copr-cli
-                  copr-cli config set username pablocostas
-                  copr-cli config set login ${{ secrets.COPR_LOGIN }}
-                  copr-cli config set password ${{ secrets.COPR_PASSWORD }}
-
-                  copr-cli build conga ~/rpmbuild/RPMS/x86_64/conga-*.rpm
+            - name: Submit to COPR
+              run: copr-cli build conga *.src.rpm
