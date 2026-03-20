@@ -2,7 +2,7 @@ name: conga
 version: "1.0.0"
 summary: Config generator CLI
 description: |
-  Build configs without the pain.
+  Build Nginx, Docker Compose, and WireGuard configs without the pain.
 
 base: core22
 confinement: strict
@@ -20,3 +20,5 @@ parts:
     source: .
     build-packages:
       - git
+    build-snaps:
+      - go
