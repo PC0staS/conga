@@ -9,21 +9,15 @@ permissions:
     contents: read
 
 jobs:
-    publish-snap:
+    build:
         runs-on: ubuntu-latest
-
         steps:
-            - name: Checkout code
-              uses: actions/checkout@v4
-
-            - name: Build and publish snap
-              uses: snapcore/action-build@v1
-              id: snap
-
-            - name: Publish to Snap Store
-              uses: snapcore/action-publish@v1
+            - uses: actions/checkout@v4
+            - uses: snapcore/action-build@v1
+              id: build
+            - uses: snapcore/action-publish@v1
               env:
                   SNAPCRAFT_STORE_CREDENTIALS: ${{ secrets.SNAPCRAFT_STORE_CREDENTIALS }}
               with:
-                  snap: ${{ steps.snap.outputs.snap }}
-                  release: stable
+                  snap: ${{ steps.build.outputs.snap }}
+                  release: edge
