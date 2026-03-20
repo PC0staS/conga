@@ -9,8 +9,8 @@ func PrintMainHelp() {
 
 Usage: conga <service> <command>
 
-Available services:
-  nginx     - Nginx configuration generator
+For a full list of available services and commands, visit:
+  https://github.com/PC0staS/conga
 
 Examples:
   conga nginx generate     - Generate Nginx config
