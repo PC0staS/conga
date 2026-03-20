@@ -32,7 +32,10 @@ jobs:
                   token = ${{ secrets.COPR_TOKEN }}
                   copr_url = https://copr.fedorainfracloud.org
                   EOF
-
+            - name: Check vendor is up to date
+              run: |
+                  go mod vendor
+                  git diff --exit-code vendor/
             - name: Build SRPM and submit to COPR
               run: |
                   VERSION=${GITHUB_REF_NAME#v}
