@@ -25,6 +25,8 @@ func main() {
 	switch service {
 	case "nginx":
 		generators.HandleNginx(command)
+	case "docker":
+		generators.HandleDocker(command)
 	case "version":
 		fmt.Printf("CONGA v%s\n", Version)
 

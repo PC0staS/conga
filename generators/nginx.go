@@ -274,20 +274,7 @@ func AskRoute(routeNumber int) Route {
 
 	return route
 }
-func askOutput() string {
-	prompt := promptui.Prompt{
-		Label:   "Output filename",
-		Default: "default.conf",
-	}
-	
-	output, err := prompt.Run()
-	if err != nil {
-		fmt.Println("Error:", err)
-		return "default.conf"
-	}
-	
-	return output
-}
+
 // WriteNginxConfig writes the configuration to a file
 func WriteNginxConfig(config NginxConfig, filename string) error {
 	// Parse the template
@@ -358,7 +345,7 @@ func GenerateNginxConfig() {
 	}
 
 	// Generate the file
-	filename := askOutput()
+	filename := askOutput("default.conf")
 	err := WriteNginxConfig(config, filename)
 	if err != nil {
 		fmt.Printf("\n❌ Error generating config: %v\n", err)

@@ -5,6 +5,8 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/manifoldco/promptui"
 )
 
 // NormalizeOutputPath normalizes an output filename provided by the user.
@@ -35,4 +37,19 @@ func NormalizeOutputPath(filename string) (string, error) {
     }
 
     return filename, nil
+}
+
+func askOutput(defaultValue string) string {
+	prompt := promptui.Prompt{
+		Label:   "Output filename",
+		Default: defaultValue,
+	}
+	
+	output, err := prompt.Run()
+	if err != nil {
+		fmt.Println("Error:", err)
+		return defaultValue
+	}
+	
+	return output
 }
