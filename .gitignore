@@ -32,3 +32,5 @@ go.work.sum
 # .vscode/
 
 default.conf
+
+.DS_Store
