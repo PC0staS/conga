@@ -8,6 +8,10 @@ Config generator CLI. Build Nginx, Docker Compose, and WireGuard configs without
 go install github.com/pc0stas/conga@latest
 ```
 
+```bash
+snap install conga #amd64 only
+```
+
 Or grab a [binary](https://github.com/pc0stas/conga/releases).
 
 **Coming soon:**
@@ -93,6 +97,8 @@ Multi-platform:
 Check the [project board](https://github.com/users/PC0staS/projects/8) for what’s coming.
 
 **Done:**
+
+- ✅ Published in snap
 
 - ✅ Nginx generator
 - ✅ Docker Compose generator
