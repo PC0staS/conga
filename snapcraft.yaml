@@ -1,8 +1,14 @@
 name: conga
-version: "1.0.0"
+version: "1.0.3"
+title: CONGA
 summary: Config generator CLI
 description: |
   Build Nginx, Docker Compose, and WireGuard configs without the pain.
+license: MIT
+contact: https://github.com/pc0stas/conga
+issues: https://github.com/pc0stas/conga/issues
+source-code: https://github.com/pc0stas/conga
+website: https://github.com/pc0stas/conga
 
 base: core22
 confinement: strict
