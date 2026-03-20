@@ -1,74 +1,73 @@
 name: Build and Release
 
 on:
-  push:
-    tags:
-      - 'v*'
+    push:
+        tags:
+            - "v*"
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        goos: [linux, darwin, windows]
-        goarch: [amd64, arm64]
-        exclude:
-          - goos: windows
-            goarch: arm64
-    
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      
-      - name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: '1.23'
-      
-      - name: Build
-        env:
-          GOOS: ${{ matrix.goos }}
-          GOARCH: ${{ matrix.goarch }}
-        run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          OUTPUT_NAME=conga-${{ matrix.goos }}-${{ matrix.goarch }}
-          
-          if [ "${{ matrix.goos }}" = "windows" ]; then
-            OUTPUT_NAME="${OUTPUT_NAME}.exe"
-          fi
-          
-          go build -ldflags "-X main.Version=${VERSION}" -o ${OUTPUT_NAME} ./...
-          
-          # Crear carpeta para artefactos
-          mkdir -p dist
-          mv ${OUTPUT_NAME} dist/
-      
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: conga-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: dist/conga-*
-  
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    
-    steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: release-artifacts
-      
-      - name: Prepare release files
-        run: |
-          mkdir -p release-files
-          find release-artifacts -type f -name "conga-*" -exec cp {} release-files/ \;
-          ls -la release-files/
-      
-      - name: Create Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: release-files/conga-*
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    build:
+        runs-on: ubuntu-latest
+
+        strategy:
+            matrix:
+                goos: [linux, darwin, windows]
+                goarch: [amd64, arm64]
+                exclude:
+                    - goos: windows
+                      goarch: arm64
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Go
+              uses: actions/setup-go@v4
+              with:
+                  go-version: "1.23"
+
+            - name: Build
+              env:
+                  GOOS: ${{ matrix.goos }}
+                  GOARCH: ${{ matrix.goarch }}
+              run: |
+                  VERSION=${GITHUB_REF#refs/tags/}
+                  OUTPUT_NAME=conga-${{ matrix.goos }}-${{ matrix.goarch }}
+
+                  if [ "${{ matrix.goos }}" = "windows" ]; then
+                    OUTPUT_NAME="${OUTPUT_NAME}.exe"
+                  fi
+
+                  mkdir -p dist
+                  go build -ldflags "-X main.Version=${VERSION}" -o dist/${OUTPUT_NAME} .
+
+                  ls -la dist/
+
+            - name: Upload artifact
+              uses: actions/upload-artifact@v4
+              with:
+                  name: conga-${{ matrix.goos }}-${{ matrix.goarch }}
+                  path: dist/conga-*
+
+    release:
+        needs: build
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Download all artifacts
+              uses: actions/download-artifact@v4
+              with:
+                  path: release-artifacts
+
+            - name: Prepare release files
+              run: |
+                  mkdir -p release-files
+                  find release-artifacts -type f -name "conga-*" -exec cp {} release-files/ \;
+                  ls -la release-files/
+
+            - name: Create Release
+              uses: softprops/action-gh-release@v1
+              with:
+                  files: release-files/conga-*
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
