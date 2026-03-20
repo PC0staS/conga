@@ -6,7 +6,7 @@ import (
 
 	"github.com/pc0stas/conga/generators"
 )
-var Version = "1.1.0"
+var Version = "1.1.1"
 
 func main() {
 	// Check if there are arguments
