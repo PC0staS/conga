@@ -6,7 +6,7 @@ import (
 
 	"github.com/pc0stas/conga/generators"
 )
-var Version = "0.1.0"
+var Version = "1.0.0"
 
 func main() {
 	// Check if there are arguments
@@ -21,7 +21,7 @@ func main() {
 		command = os.Args[2]
 	}
 
-	// Dispatcher based on service
+	// Dispatcher based on service.
 	switch service {
 	case "nginx":
 		generators.HandleNginx(command)
