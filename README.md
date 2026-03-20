@@ -10,29 +10,7 @@ CONGA (Config Generator App) es una herramienta de línea de comandos multiplata
 
 ## ¿Qué hace?
 
-CONGA incluye generadores para los servicios más habituales en proyectos web y backend:
-
-### Nginx
-Genera un archivo de configuración de Nginx listo para usar. Permite configurar:
-- Dominios y nombres de host
-- HTTPS / SSL con rutas a los certificados
-- Rutas de tipo proxy (ideal para aplicaciones Node.js, Python, etc.)
-- Rutas para archivos estáticos con caché
-- Soporte para WebSockets
-- Logs de acceso y error por dominio
-
-### Docker Compose
-Genera un archivo `docker-compose.yml` completamente funcional. Permite definir:
-- Servicios personalizados (web, base de datos, caché, etc.)
-- Imagen Docker de cada servicio
-- Mapeo de puertos
-- Volúmenes montados
-- Variables de entorno (directas o mediante archivo `.env`)
-
-### Otros comandos
-- `conga version` — muestra la versión instalada
-- `conga help` — muestra el menú de ayuda principal
-- `conga <servicio> help` — muestra la ayuda específica de cada generador
+Puedes consultar todos los detalles sobre las funcionalidades y los generadores disponibles en el **[proyecto de CONGA en GitHub](https://github.com/PC0staS/conga)**.
 
 ---
 
