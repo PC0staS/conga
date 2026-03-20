@@ -10,6 +10,7 @@ go install github.com/pc0stas/conga@latest
 
 ```bash
 snap install conga #amd64 only
+apt install conga # Debian/Ubuntu
 ```
 
 Or grab a [binary](https://github.com/pc0stas/conga/releases).
@@ -18,7 +19,6 @@ Or grab a [binary](https://github.com/pc0stas/conga/releases).
 
 ```bash
 dnf install conga # Fedora
-apt install conga # Debian/Ubuntu
 brew install conga # macOS
 ```
 
