@@ -13,6 +13,11 @@ snap install conga #amd64 only
 apt install conga # Debian/Ubuntu
 ```
 
+```bash
+sudo dnf copr enable pablocostas/conga
+sudo dnf install conga
+```
+
 Or grab a [binary](https://github.com/pc0stas/conga/releases).
 
 **Coming soon:**

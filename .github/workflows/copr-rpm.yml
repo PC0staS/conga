@@ -1,0 +1,49 @@
+name: Build and Upload RPM to COPR
+
+on:
+    push:
+        tags:
+            - "v*"
+
+jobs:
+    build-rpm:
+        runs-on: ubuntu-latest
+        container:
+            image: fedora:39
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Install dependencies
+              run: |
+                  dnf install -y golang rpmdevtools
+
+            - name: Setup rpmbuild
+              run: |
+                  rpmdev-setuptree
+
+            - name: Prepare SPEC file
+              run: |
+                  cp conga.spec ~/rpmbuild/SPECS/
+                  VERSION=${GITHUB_REF#refs/tags/v}
+                  sed -i "s/Version:.*/Version:        ${VERSION}/" ~/rpmbuild/SPECS/conga.spec
+
+            - name: Download source
+              run: |
+                  cd ~/rpmbuild/SOURCES
+                  wget https://github.com/pc0stas/conga/archive/refs/tags/${GITHUB_REF#refs/tags/}.tar.gz
+
+            - name: Build RPM
+              run: |
+                  cd ~/rpmbuild
+                  rpmbuild -ba SPECS/conga.spec
+
+            - name: Upload to COPR
+              run: |
+                  dnf install -y copr-cli
+                  copr-cli config set username pablocostas
+                  copr-cli config set login ${{ secrets.COPR_LOGIN }}
+                  copr-cli config set password ${{ secrets.COPR_PASSWORD }}
+
+                  copr-cli build conga ~/rpmbuild/RPMS/x86_64/conga-*.rpm
