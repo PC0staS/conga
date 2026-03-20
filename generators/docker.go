@@ -361,7 +361,7 @@ func WriteDockerCompose(config DockerComposeConfig, filename string) error {
 }
 // GenerateDockerCompose manages the entire Docker Compose interactive flow
 func GenerateDockerCompose() {
-	fmt.Println("\n🐳 Configuring Docker Compose...\n")
+	fmt.Println("\n🐳 Configuring Docker Compose...")
 
 	// Ask for number of services
 	numServices := AskNumberOfServices()
