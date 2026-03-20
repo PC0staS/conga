@@ -19,6 +19,7 @@ sudo dnf install conga
 ```
 
 ```bash
+brew tap pc0stas/conga
 brew install conga # macOS
 ```
 
