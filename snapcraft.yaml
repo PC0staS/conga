@@ -1,0 +1,22 @@
+name: conga
+version: "1.0.0"
+summary: Config generator CLI
+description: |
+  Build configs without the pain.
+
+base: core22
+confinement: strict
+
+apps:
+  conga:
+    command: bin/conga
+    plugs:
+      - home
+      - network
+
+parts:
+  conga:
+    plugin: go
+    source: .
+    build-packages:
+      - git
