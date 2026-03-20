@@ -20,6 +20,7 @@ func main() {
 	if len(os.Args) > 2 {
 		command = os.Args[2]
 	}
+	
 
 	// Dispatcher based on service.
 	switch service {
@@ -27,6 +28,9 @@ func main() {
 		generators.HandleNginx(command)
 	case "docker":
 		generators.HandleDocker(command)
+	case "wireguard":
+		args := os.Args[2:]
+		generators.HandleWireGuard(args)
 	case "version":
 		fmt.Printf("CONGA v%s\n", Version)
 

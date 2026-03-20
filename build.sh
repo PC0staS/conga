@@ -9,7 +9,7 @@ cd build
 
 # Linux 64-bit
 echo "Building for Linux..."
-GOOS=linux GOARCH=amd64 go build -o conga-linux ..
+GOOS=linux GOARCH=amd64 go build -o conga-linux-amd64 ..
 
 # Linux ARM64
 echo "Building for Linux ARM64..."
