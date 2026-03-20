@@ -16,5 +16,5 @@ jobs:
 
                   curl -X POST \
                     --basic -u "pablocostas:${{ secrets.COPR_PASSWORD }}" \
-                    "https://copr.fedorainfracloud.org/api_3/projects/pablocostas/conga/builds/add/url" \
-                    -d "url=$ARCHIVE_URL"
+                    "https://copr.fedorainfracloud.org/api_3/project/pablocostas/conga/builds/add/url" \
+                    --data-urlencode "url=$ARCHIVE_URL"
