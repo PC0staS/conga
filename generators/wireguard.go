@@ -20,8 +20,12 @@ ListenPort = {{ .ListenPort }}
 [Peer]
 PublicKey = {{ .PublicKey }}
 AllowedIPs = {{ .AllowedIPs }}
-{{- if .Endpoint }}Endpoint = {{ .Endpoint }}{{ end }}
-{{- if .PersistentKeepalive }}PersistentKeepalive = {{ .PersistentKeepalive }}{{ end }}
+{{- if .Endpoint }}
+Endpoint = {{ .Endpoint }}
+{{- end }}
+{{- if .PersistentKeepalive }}
+PersistentKeepalive = {{ .PersistentKeepalive }}
+{{- end }}
 {{- end }}
 `
 
