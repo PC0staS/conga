@@ -3,7 +3,7 @@ name: Build and Release
 on:
   push:
     tags:
-      - 'v*'  # Trigger cuando haces push de un tag como v1.0.0
+      - 'v*'
 
 jobs:
   build:
@@ -14,7 +14,6 @@ jobs:
         goos: [linux, darwin, windows]
         goarch: [amd64, arm64]
         exclude:
-          # Windows no soporta ARM64 fácilmente
           - goos: windows
             goarch: arm64
     
@@ -40,24 +39,36 @@ jobs:
           fi
           
           go build -ldflags "-X main.Version=${VERSION}" -o ${OUTPUT_NAME} ./...
+          
+          # Crear carpeta para artefactos
+          mkdir -p dist
+          mv ${OUTPUT_NAME} dist/
       
       - name: Upload artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: conga-${{ matrix.goos }}-${{ matrix.goarch }}
-          path: conga-${{ matrix.goos }}-${{ matrix.goarch }}*
+          path: dist/conga-*
   
   release:
     needs: build
     runs-on: ubuntu-latest
     
     steps:
-      - name: Download artifacts
-        uses: actions/download-artifact@v3
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release-artifacts
+      
+      - name: Prepare release files
+        run: |
+          mkdir -p release-files
+          find release-artifacts -type f -name "conga-*" -exec cp {} release-files/ \;
+          ls -la release-files/
       
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: conga-*/*
+          files: release-files/conga-*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
