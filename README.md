@@ -131,6 +131,36 @@ Multi-platform:
 ./build.sh
 ```
 
+## Makefile
+
+The repository includes a `Makefile` with helper targets for common developer tasks:
+
+- `make generate-certs DOMAIN=conga.local` — generate local mkcert certificates into `./certs` (uses `tools/generate_certs.sh`).
+- `make build` — build a local binary into `./build/conga`.
+- `make build-all` — run `build.sh` to produce multi-platform release binaries.
+- `make test` — run `go test ./...` for the whole module.
+- `make lint` — run `golangci-lint` if installed (no-op otherwise).
+- `make install` — build and copy the binary to `$(GOBIN)` (requires `go`).
+- `make clean` — remove build artifacts and generated certs.
+- `make help` — show available Makefile targets and usage.
+
+Configurable variables (with defaults defined in the `Makefile`):
+
+- `DOMAIN` — domain for generated certs (default: `conga.local`).
+- `OUT_DIR` — certificates output directory (default: `./certs`).
+- `BUILD_DIR` — build output directory (default: `build`).
+- `BINARY` — binary name (default: `conga`).
+
+Examples:
+
+```bash
+make generate-certs DOMAIN=conga.local
+make build
+make test
+```
+
+See the Makefile for details: [Makefile](Makefile#L1).
+
 ## Status
 
 Check the [project board](https://github.com/users/PC0staS/projects/8) for what’s coming.
