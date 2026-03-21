@@ -12,14 +12,18 @@ Usage: conga <service> <command>
 Available services:
   nginx     - Nginx configuration generator
   docker    - Docker configuration generator
+  wireguard  - WireGuard configuration generator
   version   - Show CONGA version
   help      - Show this help message
 
 Examples:
-  conga nginx generate     - Generate Nginx config
-  conga nginx help         - Show Nginx help
-  conga docker generate    - Generate Docker config
-  conga docker help        - Show Docker help
-  conga version            - Show CONGA version
-  conga help               - Show this help`)
+  conga nginx generate            - Generate Nginx config
+  conga nginx help                - Show Nginx help
+  conga docker generate           - Generate Docker config
+  conga docker help               - Show Docker help
+  conga wireguard generate server - Generate WireGuard server config
+  conga wireguard generate client - Generate WireGuard client config
+  conga wireguard help            - Show WireGuard help
+  conga version                   - Show CONGA version
+  conga help                      - Show this help message`)
 }
