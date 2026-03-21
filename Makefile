@@ -59,3 +59,4 @@ help:
 	@echo "  make test                               # run go test ./..."
 	@echo "  make lint                               # run golangci-lint if installed"
 	@echo "  make clean                              # remove build/ and certs/"
+	@echo "  make install                            # build and copy binary to GOPATH/bin or $GOBIN"
