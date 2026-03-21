@@ -4,8 +4,8 @@
 
 echo "🔨 Building CONGA for multiple platforms...\n"
 
-mkdir -p ../build
-cd ../build
+mkdir -p ./build
+cd ./build
 
 # Linux 64-bit
 echo "Building for Linux..."

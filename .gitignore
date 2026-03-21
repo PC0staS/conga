@@ -33,4 +33,7 @@ go.work.sum
 
 default.conf
 
+# Local generated certificates (mkcert)
+/certs/
+
 .DS_Store
