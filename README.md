@@ -171,14 +171,14 @@ Check the [project board](https://github.com/users/PC0staS/projects/8) for what�
 
 - ✅ Nginx generator
 - ✅ Docker Compose generator
+- ✅ WireGuard generator
+- 📦 Package managers (apt, dnf, brew, AUR)
 
 **Coming:**
 
-- 🔄 WireGuard generator
 - 🔄 Apache generator
 - 🔄 Caddy generator
 - 🔄 Template system
-- 📦 Package managers (apt, dnf, brew, AUR)
 
 ## License
 
