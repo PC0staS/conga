@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -25,7 +25,7 @@ func TestWireGuard_GenerateBasic(t *testing.T) {
 		t.Fatalf("WriteWireGuardConfig failed: %v", err)
 	}
 	out := ifacePath + ".conf"
-	b, _ := ioutil.ReadFile(out)
+	b, _ := os.ReadFile(out)
 	s := string(b)
 	if !strings.Contains(s, "[Interface]") || !strings.Contains(s, "Address = 10.0.0.1/24") {
 		t.Fatalf("generated wg config missing interface section")

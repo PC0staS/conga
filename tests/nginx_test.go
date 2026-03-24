@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -22,7 +22,7 @@ func TestNginx_GenerateHTTP(t *testing.T) {
 	if err := generators.WriteNginxConfig(cfg, out); err != nil {
 		t.Fatalf("WriteNginxConfig failed: %v", err)
 	}
-	b, _ := ioutil.ReadFile(out)
+	b, _ := os.ReadFile(out)
 	s := string(b)
 	if !strings.Contains(s, "server_name example.test") {
 		t.Fatalf("expected domain in config")
@@ -45,7 +45,7 @@ func TestNginx_GenerateHTTPS(t *testing.T) {
 	if err := generators.WriteNginxConfig(cfg, out); err != nil {
 		t.Fatalf("WriteNginxConfig failed: %v", err)
 	}
-	b, _ := ioutil.ReadFile(out)
+	b, _ := os.ReadFile(out)
 	s := string(b)
 	if !strings.Contains(s, "listen 443 ssl") || !strings.Contains(s, "ssl_certificate /etc/nginx/certs/example.test.crt") {
 		t.Fatalf("expected TLS directives in config")
