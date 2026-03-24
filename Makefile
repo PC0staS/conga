@@ -6,9 +6,9 @@ OUT_DIR ?= ./certs
 BINARY ?= conga
 BUILD_DIR ?= build
 
-.PHONY: all generate-certs build-local build-all test lint clean install help
+.PHONY: all generate-certs build build-all test lint clean install help
 
-all: build-local
+all: build
 
 # Generate local certificates using tools/generate_certs.sh (mkcert required)
 # Usage: make generate-certs DOMAIN=conga.local
