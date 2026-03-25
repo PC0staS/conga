@@ -3,7 +3,6 @@ package generators
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 	"text/template"
 
 	"github.com/manifoldco/promptui"
@@ -90,94 +89,12 @@ func HandleCaddy(command string) {
 	}
 }
 
-// AskDomain asks for the main domain
-func AskCaddyDomain() string {
-	prompt := promptui.Prompt{
-		Label:   "Main domain",
-		Default: "localhost",
-	}
+// AskCaddyDomain moved to shared prompt helpers (AskDomain)
 
-	domain, err := runPromptOrExit(prompt)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return ""
-	}
-
-	return domain
-}
-
-// AskTLS asks if using TLS and optionally where certs live
-func AskTLS(domain string) (bool, string) {
-	prompt := promptui.Select{
-		Label: "Use TLS (provide cert/key)?",
-		Items: []string{"Yes", "No"},
-	}
-
-	_, result, err := runSelectOrExit(prompt)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return false, ""
-	}
-
-	if result == "Yes" {
-		// Ask if user wants to generate local certs with mkcert (reuses nginx generator helpers)
-		if AskGenerateCerts() {
-			outDir := filepath.Join(".", "certs")
-			if err := GenerateCerts(domain, outDir); err != nil {
-				fmt.Printf("\n❌ Error generating certs: %v\n", err)
-				fmt.Println("Continuing; ensure certs exist at the specified cert path.")
-				// fallback to asking for cert path
-			} else {
-				// Use a conventional in-container path for generated certs
-				certPath := "/etc/caddy/certs/" + domain
-				fmt.Printf("\n✅ Certificates created at %s (referenced as %s.crt/%s.key)\n", outDir, certPath, certPath)
-				return true, certPath
-			}
-		}
-
-		certPrompt := promptui.Prompt{
-			Label:   "Cert path without suffix (e.g. /etc/caddy/certs/example.com)",
-			Default: "/etc/caddy/certs/localhost",
-		}
-		certPath, err := runPromptOrExit(certPrompt)
-		if err != nil {
-			fmt.Println("Error:", err)
-			return true, "/etc/caddy/certs/localhost"
-		}
-		return true, certPath
-	}
-
-	return false, ""
-}
+// AskTLS moved to shared prompt helpers (AskTLS)
 
 // AskNumberOfRoutes asks how many routes to configure
-func AskNumberOfRoutesCaddy() int {
-	prompt := promptui.Prompt{
-		Label:   "Number of routes (paths)",
-		Default: "1",
-		Validate: func(input string) error {
-			num := 0
-			_, err := fmt.Sscanf(input, "%d", &num)
-			if err != nil {
-				return fmt.Errorf("must be a number")
-			}
-			if num < 1 {
-				return fmt.Errorf("must be at least 1")
-			}
-			return nil
-		},
-	}
-
-	result, err := runPromptOrExit(prompt)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return 0
-	}
-
-	var num int
-	fmt.Sscanf(result, "%d", &num)
-	return num
-}
+// AskNumberOfRoutes moved to shared prompt helpers (AskNumberOfRoutes)
 
 // AskRouteCaddy asks for details of a single route
 func AskRouteCaddy(routeNumber int) CaddyRoute {
@@ -276,8 +193,8 @@ func WriteCaddyConfig(config CaddyfileConfig, filename string) error {
 func GenerateCaddyConfig() {
 	fmt.Println("\n🔧 Configuring Caddy...")
 
-	domain := AskCaddyDomain()
-	useTLS, certPath := AskTLS(domain)
+	domain := AskDomain()
+	useTLS, certPath := AskTLS(domain, "/etc/caddy/certs/"+domain)
 
 	config := CaddyfileConfig{
 		Domain:   domain,
@@ -287,7 +204,7 @@ func GenerateCaddyConfig() {
 	}
 
 	fmt.Println("\n📍 Configuring routes...")
-	numRoutes := AskNumberOfRoutesCaddy()
+	numRoutes := AskNumberOfRoutes()
 	for i := 1; i <= numRoutes; i++ {
 		route := AskRouteCaddy(i)
 		config.Routes = append(config.Routes, route)

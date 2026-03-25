@@ -3,8 +3,6 @@ package generators
 import (
 	"fmt"
 	"os"
-	"os/exec"
-	"path/filepath"
 	"text/template"
 
 	"github.com/manifoldco/promptui"
@@ -133,115 +131,7 @@ func HandleNginx(command string) {
 	}
 }
 
-// AskDomain asks for the main domain
-func AskDomain() string {
-	prompt := promptui.Prompt{
-		Label:   "Main domain",
-		Default: "localhost",
-	}
-
-	domain, err := runPromptOrExit(prompt)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return ""
-	}
-
-	return domain
-}
-// AskHTTPS asks if using HTTPS
-func AskHTTPS() bool {
-	prompt := promptui.Select{
-		Label: "Use HTTPS?",
-		Items: []string{"Yes", "No"},
-	}
-
-	_, result, err := runSelectOrExit(prompt)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return false
-	}
-
-	return result == "Yes"
-}
-
-// AskGenerateCerts asks if we should generate certs with mkcert
-func AskGenerateCerts() bool {
-	prompt := promptui.Select{
-		Label: "Generate local certificates with mkcert?",
-		Items: []string{"Yes", "No"},
-	}
-
-	_, result, err := runSelectOrExit(prompt)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return false
-	}
-
-	return result == "Yes"
-}
-
-// GenerateCerts runs mkcert to produce cert and key for domain into outDir
-func GenerateCerts(domain, outDir string) error {
-	if _, err := exec.LookPath("mkcert"); err != nil {
-		return fmt.Errorf("mkcert not found in PATH: %v", err)
-	}
-
-	if err := os.MkdirAll(outDir, 0755); err != nil {
-		return fmt.Errorf("cannot create out dir: %v", err)
-	}
-
-	// Ensure CA installed
-	cmd := exec.Command("mkcert", "-install")
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("mkcert -install failed: %v", err)
-	}
-
-	certFile := filepath.Join(outDir, domain+".crt")
-	keyFile := filepath.Join(outDir, domain+".key")
-
-	hosts := []string{domain, "localhost", "127.0.0.1"}
-	args := append([]string{"-cert-file", certFile, "-key-file", keyFile}, hosts...)
-	cmd = exec.Command("mkcert", args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	if err := cmd.Run(); err != nil {
-		return fmt.Errorf("mkcert generation failed: %v", err)
-	}
-
-	return nil
-}
-
-// AskNumberOfRoutes asks how many routes to configure
-func AskNumberOfRoutes() int {
-	prompt := promptui.Prompt{
-		Label:   "Number of routes (paths)",
-		Default: "1",
-		Validate: func(input string) error {
-			// Simple validation: check if it's a positive number
-			num := 0
-			_, err := fmt.Sscanf(input, "%d", &num)
-			if err != nil {
-				return fmt.Errorf("must be a number")
-			}
-			if num < 1 {
-				return fmt.Errorf("must be at least 1")
-			}
-			return nil
-		},
-	}
-
-	result, err := runPromptOrExit(prompt)
-	if err != nil {
-		fmt.Println("Error:", err)
-		return 0
-	}
-
-	var num int
-	fmt.Sscanf(result, "%d", &num)
-	return num
-}
+// Note: shared prompt helpers were moved to generators/promptutils.go
 // AskRoute asks for details of a single route
 func AskRoute(routeNumber int) Route {
 	fmt.Printf("\n📌 Route %d:\n", routeNumber)
@@ -365,28 +255,13 @@ func GenerateNginxConfig() {
 	fmt.Println("\n🔧 Configuring Nginx...")
 
 	domain := AskDomain()
-	useHTTPS := AskHTTPS()
+	useHttps, certPath := AskTLS(domain, "/etc/nginx/certs/"+domain)
 
 	config := NginxConfig{
 		Domain:   domain,
-		UseHTTPS: useHTTPS,
+		UseHTTPS: useHttps,
 		Routes:   []Route{},
-		CertPath: "/etc/nginx/certs/" + domain,
-	}
-
-	// If HTTPS and user wants, generate certs
-	if useHTTPS {
-		if AskGenerateCerts() {
-			outDir := filepath.Join(".", "certs")
-			if err := GenerateCerts(domain, outDir); err != nil {
-				fmt.Printf("\n❌ Error generating certs: %v\n", err)
-				fmt.Println("Continuing without changing cert paths; ensure certs exist at the nginx host path.")
-			} else {
-				// Use relative project certs mounted to /etc/nginx/certs in docker-compose example
-				config.CertPath = "/etc/nginx/certs/" + domain
-				fmt.Printf("\n✅ Certificates created at %s (will be referenced as %s.crt/%s.key)\n", outDir, config.CertPath, config.CertPath)
-			}
-		}
+		CertPath: certPath,
 	}
 
 	// Ask for routes
