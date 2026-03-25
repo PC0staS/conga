@@ -30,6 +30,8 @@ func main() {
 		generators.HandleDocker(command)
 	case "caddy":
 		generators.HandleCaddy(command)
+	case "apache":
+		generators.HandleApache(command)
 	case "wireguard":
 		args := os.Args[2:]
 		generators.HandleWireGuard(args)
