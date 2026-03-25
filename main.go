@@ -28,6 +28,8 @@ func main() {
 		generators.HandleNginx(command)
 	case "docker":
 		generators.HandleDocker(command)
+	case "caddy":
+		generators.HandleCaddy(command)
 	case "wireguard":
 		args := os.Args[2:]
 		generators.HandleWireGuard(args)
