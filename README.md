@@ -41,6 +41,12 @@ sudo dnf copr enable pablocostas/conga
 sudo dnf install conga
 ```
 
+- Arch Linux (AUR):
+
+```bash
+yay -S conga
+```
+
 Package availability varies across distributions — if you don't find a package for your platform, use the prebuilt binaries or build from source.
 
 ### Build from source
