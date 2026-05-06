@@ -1,5 +1,5 @@
 Name:           conga
-Version:        1.4.2
+Version:        1.4.3
 Release:        1%{?dist}
 Summary:        Config generator CLI
 License:        MIT

@@ -1,6 +1,6 @@
 # Maintainer: Pablo <pablo@example.com>
 pkgname=conga
-pkgver=1.4.2
+pkgver=1.4.3
 pkgrel=1
 pkgdesc="Config generator CLI for Nginx, Docker Compose, WireGuard, Apache, and Caddy"
 arch=('x86_64' 'aarch64')
