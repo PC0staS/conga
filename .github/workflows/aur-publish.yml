@@ -14,41 +14,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup SSH for AUR
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.AUR_SSH_PRIVATE_KEY }}" > ~/.ssh/aur
-          chmod 600 ~/.ssh/aur
-          ssh-keyscan aur.archlinux.org >> ~/.ssh/known_hosts
-
-      - name: Update AUR package
-        env:
-          GIT_SSH_COMMAND: "ssh -i ~/.ssh/aur"
+      - name: Update PKGBUILD version
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
           TAG="${GITHUB_REF_NAME}"
+          cp PKGBUILD aur.PKGBUILD
+          sed -i "s/^pkgver=.*/pkgver=${VERSION}/" aur.PKGBUILD
+          sed -i "s/^pkgrel=.*/pkgrel=1/" aur.PKGBUILD
+          sed -i "s|^sha256sums=.*|sha256sums=('SKIP')|" aur.PKGBUILD
 
-          git clone ssh://aur@aur.archlinux.org/conga.git aur-repo
-          cd aur-repo
-
-          # Copy PKGBUILD from main repo
-          cp ../PKGBUILD .
-
-          # Set version
-          sed -i "s/^pkgver=.*/pkgver=${VERSION}/" PKGBUILD
-          sed -i "s/^pkgrel=.*/pkgrel=1/" PKGBUILD
-
-          # Compute source tarball checksum
-          curl -sL "https://github.com/pc0stas/conga/archive/refs/tags/${TAG}.tar.gz" -o source.tar.gz
-          SHA256=$(sha256sum source.tar.gz | awk '{print $1}')
-          sed -i "s/^sha256sums=.*/sha256sums=('${SHA256}')/" PKGBUILD
-
-          # Generate .SRCINFO
-          makepkg --printsrcinfo > .SRCINFO
-
-          # Commit and push
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add PKGBUILD .SRCINFO
-          git commit -m "Update to ${TAG}" || echo "No changes to commit"
-          git push
+      - name: Publish to AUR
+        uses: KSXGitHub/github-actions-deploy-aur@v4
+        with:
+          pkgname: conga
+          pkgbuild: ./aur.PKGBUILD
+          commit_username: "github-actions[bot]"
+          commit_email: "github-actions[bot]@users.noreply.github.com"
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: "Update to ${{ github.ref_name }}"
+          updpkgsums: true
+          ssh_keyscan_types: rsa,ecdsa,ed25519
