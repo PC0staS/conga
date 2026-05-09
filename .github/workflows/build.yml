@@ -41,7 +41,7 @@ jobs:
                   fi
 
                   mkdir -p dist
-                  go build -ldflags "-X main.Version=${VERSION}" -o dist/${OUTPUT_NAME} .
+                  go build -ldflags "-X github.com/pc0stas/conga/cmd.Version=${VERSION}" -o dist/${OUTPUT_NAME} .
 
                   ls -la dist/
 

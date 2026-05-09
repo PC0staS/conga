@@ -6,7 +6,7 @@ OUT_DIR ?= ./certs
 BINARY ?= conga
 BUILD_DIR ?= build
 
-.PHONY: all generate-certs build build-all test lint clean install help
+.PHONY: all generate-certs build build-all test lint clean install help completions
 
 all: build
 
@@ -50,6 +50,17 @@ clean:
 	@rm -f $(BUILD_DIR)/$(BINARY)
 	@rm -rf $(BUILD_DIR)
 	@rm -rf $(OUT_DIR)
+	@rm -rf completions
+
+# Generate shell completions for all supported shells into ./completions/
+completions: build
+	@echo "==> Generating shell completions"
+	@mkdir -p completions
+	@$(BUILD_DIR)/$(BINARY) completion bash > completions/conga.bash
+	@$(BUILD_DIR)/$(BINARY) completion zsh > completions/_conga
+	@$(BUILD_DIR)/$(BINARY) completion fish > completions/conga.fish
+	@$(BUILD_DIR)/$(BINARY) completion powershell > completions/conga.ps1
+	@echo "Completions written to ./completions/"
 
 help:
 	@echo "Makefile targets:"
@@ -60,3 +71,4 @@ help:
 	@echo "  make lint                               # run golangci-lint if installed"
 	@echo "  make clean                              # remove build/ and certs/"
 	@echo "  make install                            # build and copy binary to GOPATH/bin or $GOBIN"
+	@echo "  make completions                        # generate shell completions (bash/zsh/fish/ps)"

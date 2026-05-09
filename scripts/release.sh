@@ -41,8 +41,8 @@ fi
 
 echo "Updating version to $NO_V_VER (tag: $TAG_VER)"
 
-# Update main.go (var Version = "x.y.z")
-sed -E -i.bak "s/^(var Version = \").*(\")/\1${NO_V_VER}\2/" main.go
+# Update cmd/version.go (var Version = "x.y.z")
+sed -E -i.bak "s/(var Version = \")[^\"]+(\")/\1${NO_V_VER}\2/" cmd/version.go
 
 # Update conga.spec (Version:        x.y.z)
 sed -E -i.bak "s/^(Version:)[[:space:]]+.*/Version:        ${NO_V_VER}/" conga.spec
@@ -54,12 +54,12 @@ sed -E -i.bak "s/^version:[[:space:]]+.*/version: \"${NO_V_VER}\"/" snapcraft.ya
 sed -E -i.bak "s/^pkgver=.*/pkgver=${NO_V_VER}/" PKGBUILD
 
 echo "Files updated. Showing git diff for review:"
-git --no-pager diff -- main.go conga.spec snapcraft.yaml PKGBUILD || true
+git --no-pager diff -- cmd/version.go conga.spec snapcraft.yaml PKGBUILD || true
 
 read -p "Continue and commit changes? [y/N] " CONFIRM
 if [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]]; then
   echo "Aborted by user. Restoring backups."
-  mv -f main.go.bak main.go || true
+  mv -f cmd/version.go.bak cmd/version.go || true
   mv -f conga.spec.bak conga.spec || true
   mv -f snapcraft.yaml.bak snapcraft.yaml || true
   mv -f PKGBUILD.bak PKGBUILD || true
@@ -67,7 +67,7 @@ if [[ "$CONFIRM" != "y" && "$CONFIRM" != "Y" ]]; then
 fi
 
 # Remove backup files after committing
-git add main.go conga.spec snapcraft.yaml PKGBUILD
+git add cmd/version.go conga.spec snapcraft.yaml PKGBUILD
 git commit -m "Release ${TAG_VER}"
 git push origin "$CURRENT_BRANCH"
 
@@ -75,6 +75,6 @@ git tag -a "${TAG_VER}" -m "Release ${TAG_VER}"
 git push origin "${TAG_VER}"
 
 echo "Release ${TAG_VER} created and pushed. Cleaning backups."
-rm -f main.go.bak conga.spec.bak snapcraft.yaml.bak PKGBUILD.bak
+rm -f cmd/version.go.bak conga.spec.bak snapcraft.yaml.bak PKGBUILD.bak
 
 echo "Done. GitHub Actions will now build and publish binaries, Snap, RPM, Homebrew, and AUR."

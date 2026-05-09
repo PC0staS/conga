@@ -14,11 +14,17 @@ sha256sums=('SKIP')
 build() {
   cd "${pkgname}-${pkgver}"
   export GOFLAGS="-buildmode=pie -trimpath -mod=readonly -modcacherw"
-  go build -mod=vendor -ldflags "-X main.Version=v${pkgver}" -o conga .
+  go build -mod=vendor -ldflags "-X github.com/pc0stas/conga/cmd.Version=v${pkgver}" -o conga .
+  ./conga completion bash > conga.bash
+  ./conga completion zsh > _conga
+  ./conga completion fish > conga.fish
 }
 
 package() {
   cd "${pkgname}-${pkgver}"
   install -Dm755 conga "${pkgdir}/usr/bin/conga"
+  install -Dm644 conga.bash "${pkgdir}/usr/share/bash-completion/completions/conga"
+  install -Dm644 _conga "${pkgdir}/usr/share/zsh/site-functions/_conga"
+  install -Dm644 conga.fish "${pkgdir}/usr/share/fish/vendor_completions.d/conga.fish"
   install -Dm644 LICENSE "${pkgdir}/usr/share/licenses/${pkgname}/LICENSE"
 }
